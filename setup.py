@@ -21,6 +21,7 @@ setup(
         'httpie>=0.7.0',
         'consulate>=0.6.0'
     ],
+    test_suite='httpie_consul_tests',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Programming Language :: Python',

@@ -31,9 +31,13 @@ CONSUL_CLIENT_PARAMS = {
 class ConsulAdapter(HTTPAdapter):
     _consul_client = None
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._consul_client = Consul(**CONSUL_CLIENT_PARAMS)
+    def __init__(self, consul_host=None, consul_port=None, consul_scheme=None, consul_class=None, *args, **kwargs):
+        consul_host = consul_host or os.getenv('CONSUL_HOST', 'localhost')
+        consul_port = consul_port or os.getenv('CONSUL_PORT', 8500)
+        consul_scheme = consul_scheme or os.getenv('CONSUL_SCHEME', 'http'),
+        consul_class = consul_class or Consul
+        super(ConsulAdapter, self).__init__(*args, **kwargs)
+        self._consul_client = consul_class(host=consul_host, port=consul_port)
 
     def fetch_host_and_port_from_consul(self, service_name):
         consul_result = self._consul_client.catalog.service(service_name)
@@ -51,7 +55,7 @@ class ConsulAdapter(HTTPAdapter):
             ':'.join((host, str(port))),
             path, query, fragment
         ))
-        return super().get_connection(url, proxies)
+        return super(ConsulAdapter, self).get_connection(url, proxies)
 
 
 class ConsulPlugin(TransportPlugin):
