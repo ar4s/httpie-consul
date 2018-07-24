@@ -1,5 +1,9 @@
 httpie-consul
 =============
+![Travis (.org)](https://img.shields.io/travis/ar4s/httpie-consul.svg)
+![PyPI](https://img.shields.io/pypi/v/httpie-consul.svg)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/httpie-consul.svg)
+![PyPI - License](https://img.shields.io/pypi/l/httpie-consul.svg)
 
 Consul plugin for [HTTPie](https://httpie.org/).
 

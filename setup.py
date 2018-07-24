@@ -28,6 +28,11 @@ setup(
         'Environment :: Plugins',
         'License :: OSI Approved :: BSD License',
         'Topic :: Internet :: WWW/HTTP',
-        'Topic :: Utilities'
+        'Topic :: Utilities',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
 )
