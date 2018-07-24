@@ -2,7 +2,10 @@
 Consul plugin for HTTPie.
 """
 import os
-from urllib.parse import urlparse, urlsplit, urlunsplit
+try:
+    from urllib.parse import urlsplit, urlunsplit
+except ImportError:
+    from urlparse import urlsplit, urlunsplit
 
 from consulate import Consul
 from httpie.plugins import TransportPlugin
