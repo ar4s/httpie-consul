@@ -2,7 +2,7 @@
 Consul plugin for HTTPie.
 """
 import os
-from urllib.parse import urlparse, urlsplit, urljoin
+from urllib.parse import urlparse, urlsplit, urlunsplit
 
 from consulate import Consul
 from httpie.plugins import TransportPlugin
@@ -25,10 +25,6 @@ CONSUL_CLIENT_PARAMS = {
 }
 
 
-def replace_port(res, port):
-    return res._replace()
-
-
 class ConsulAdapter(HTTPAdapter):
     _consul_client = None
 
@@ -36,22 +32,23 @@ class ConsulAdapter(HTTPAdapter):
         super().__init__(*args, **kwargs)
         self._consul_client = Consul(**CONSUL_CLIENT_PARAMS)
 
-    def get_connection(self, url, proxies=None):
-        result = urlparse(url)
-        service_name = result.netloc
+    def fetch_host_and_port_from_consul(self, service_name):
         consul_result = self._consul_client.catalog.service(service_name)
         if not consul_result:
             raise RuntimeError(
                 "Consul has returned empty list for {}.".format(service_name)
             )
-        result = result._replace(
-            scheme=CONSUL_SERVICE_DEFAULT_SCHEMA,
-            netloc=':'.join([
-                consul_result[0]['Node'],
-                str(consul_result[0]['ServicePort'])
-            ])
-        )
-        return super().get_connection(result.geturl(), proxies)
+        return consul_result[0]['Node'], consul_result[0]['ServicePort']
+
+    def get_connection(self, url, proxies=None):
+        (scheme, netloc, path, query, fragment) = urlsplit(url)
+        host, port = self.fetch_host_and_port_from_consul(netloc)
+        url = urlunsplit((
+            CONSUL_SERVICE_DEFAULT_SCHEMA,
+            ':'.join((host, str(port))),
+            path, query, fragment
+        ))
+        return super().get_connection(url, proxies)
 
 
 class ConsulPlugin(TransportPlugin):
